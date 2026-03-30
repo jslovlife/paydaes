@@ -1,7 +1,7 @@
 package com.paydaes.corehr.controller;
 
-import com.paydaes.entities.dto.EmployeeDto;
-import com.paydaes.entities.model.Employee;
+import com.paydaes.entities.dto.corehr.EmployeeDto;
+import com.paydaes.entities.model.corehr.Employee;
 import com.paydaes.corehr.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

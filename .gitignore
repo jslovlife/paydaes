@@ -49,6 +49,12 @@ bin/
 application-local.properties
 application-secret.properties
 
+# Keystore files — never commit secret keys
+*.jceks
+*.jks
+*.p12
+*.pfx
+
 # H2 database files
 *.db
 *.mv.db

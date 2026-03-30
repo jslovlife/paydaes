@@ -1,6 +1,6 @@
-package com.paydaes.entities.dto;
+package com.paydaes.entities.dto.corehr;
 
-import com.paydaes.entities.model.Employee;
+import com.paydaes.entities.model.corehr.Employee;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,5 +25,4 @@ public class EmployeeDto {
     private Employee.EmployeeStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    
 }

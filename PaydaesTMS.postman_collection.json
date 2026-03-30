@@ -1,0 +1,337 @@
+{
+  "info": {
+    "name": "Paydaes TMS API",
+    "description": "Tenant Management Service — manages clients, companies, and encrypted database connections.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8081",
+      "type": "string"
+    },
+    {
+      "key": "client_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "company_id",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Clients",
+      "item": [
+        {
+          "name": "Create Client",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tms/clients",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "clients"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Acme Corporation\",\n  \"email\": \"admin@acme.com\",\n  \"phoneNumber\": \"+60123456789\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Get All Clients",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tms/clients",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "clients"]
+            }
+          }
+        },
+        {
+          "name": "Get Client by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tms/clients/{{client_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "clients", "{{client_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Client by Email",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tms/clients/email/admin@acme.com",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "clients", "email", "admin@acme.com"]
+            }
+          }
+        },
+        {
+          "name": "Search Clients by Name",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tms/clients/search?name=Acme",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "clients", "search"],
+              "query": [{ "key": "name", "value": "Acme" }]
+            }
+          }
+        },
+        {
+          "name": "Update Client",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tms/clients/{{client_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "clients", "{{client_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Acme Corporation Updated\",\n  \"email\": \"admin@acme.com\",\n  \"phoneNumber\": \"+60199999999\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Delete Client",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/api/tms/clients/{{client_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "clients", "{{client_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Total Client Count",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tms/clients/count",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "clients", "count"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Companies",
+      "item": [
+        {
+          "name": "Create Company (under a Client)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tms/companies/client/{{client_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "companies", "client", "{{client_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Acme Sdn Bhd\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Get All Companies",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tms/companies",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "companies"]
+            }
+          }
+        },
+        {
+          "name": "Get Company by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tms/companies/{{company_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "companies", "{{company_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Companies by Client",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tms/companies/client/{{client_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "companies", "client", "{{client_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Company",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tms/companies/{{company_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "companies", "{{company_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Acme Sdn Bhd (Updated)\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Delete Company",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/api/tms/companies/{{company_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "companies", "{{company_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "DB Connections — Client commondb",
+      "item": [
+        {
+          "name": "Save Client commondb Connection",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tms/connections/client/{{client_id}}/commondb",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "connections", "client", "{{client_id}}", "commondb"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"host\": \"localhost\",\n  \"port\": 3306,\n  \"databaseName\": \"acme_commondb\",\n  \"username\": \"acme_user\",\n  \"password\": \"acme_pass123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Get Client commondb Connection",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tms/connections/client/{{client_id}}/commondb",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "connections", "client", "{{client_id}}", "commondb"]
+            }
+          }
+        },
+        {
+          "name": "Get All Client commondb Connections",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tms/connections/client/commondb",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "connections", "client", "commondb"]
+            }
+          }
+        },
+        {
+          "name": "Delete Client commondb Connection",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/api/tms/connections/client/{{client_id}}/commondb",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "connections", "client", "{{client_id}}", "commondb"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "DB Connections — Company database",
+      "item": [
+        {
+          "name": "Save Company DB Connection",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tms/connections/company/{{company_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "connections", "company", "{{company_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"host\": \"localhost\",\n  \"port\": 3306,\n  \"databaseName\": \"acme_company_db\",\n  \"username\": \"company_user\",\n  \"password\": \"company_pass456\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Get Company DB Connection",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tms/connections/company/{{company_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "connections", "company", "{{company_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get All Company DB Connections by Client",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tms/connections/client/{{client_id}}/companies",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "connections", "client", "{{client_id}}", "companies"]
+            }
+          }
+        },
+        {
+          "name": "Delete Company DB Connection",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/api/tms/connections/company/{{company_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tms", "connections", "company", "{{company_id}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

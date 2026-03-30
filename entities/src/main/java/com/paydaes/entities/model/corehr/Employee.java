@@ -1,5 +1,6 @@
-package com.paydaes.entities.model;
+package com.paydaes.entities.model.corehr;
 
+import com.paydaes.entities.model.tms.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

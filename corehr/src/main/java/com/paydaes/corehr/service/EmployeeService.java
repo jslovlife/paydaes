@@ -1,8 +1,8 @@
 package com.paydaes.corehr.service;
 
-import com.paydaes.entities.dao.EmployeeDao;
-import com.paydaes.entities.dto.EmployeeDto;
-import com.paydaes.entities.model.Employee;
+import com.paydaes.entities.dao.corehr.EmployeeDao;
+import com.paydaes.entities.dto.corehr.EmployeeDto;
+import com.paydaes.entities.model.corehr.Employee;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

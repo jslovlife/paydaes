@@ -1,4 +1,4 @@
-package com.paydaes.entities.model;
+package com.paydaes.entities.model.tms;
 
 import jakarta.persistence.*;
 import lombok.Getter;
