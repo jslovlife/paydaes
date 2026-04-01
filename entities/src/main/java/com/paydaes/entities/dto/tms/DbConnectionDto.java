@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Data
@@ -15,6 +16,8 @@ import java.time.LocalDateTime;
 public class DbConnectionDto {
 
     private Long id;
+
+    private boolean isActive;
 
     @NotBlank(message = "Host must not be blank")
     private String host;

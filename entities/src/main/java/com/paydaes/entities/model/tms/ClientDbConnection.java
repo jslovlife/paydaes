@@ -20,6 +20,9 @@ public class ClientDbConnection extends BaseEntity {
     @JoinColumn(name = "client_id", nullable = false, unique = true)
     private Client client;
 
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = true;
+
     @Column(nullable = false)
     private String host;
 
@@ -34,4 +37,8 @@ public class ClientDbConnection extends BaseEntity {
 
     @Column(nullable = false)
     private String password;
+
+    // track which key was used to encrypt, handy if need to rotate key later
+    @Column(name = "key_version", nullable = false, length = 50)
+    private String keyVersion = "v1";
 }

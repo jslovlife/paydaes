@@ -24,6 +24,8 @@ public class ClientDao {
 
     public List<Client> findByNameContaining(String name) { return clientRepository.findByNameContainingIgnoreCase(name); }
 
+    public boolean existsById(Long id) { return clientRepository.existsById(id); }
+
     public boolean existsByEmail(String email) { return clientRepository.existsByEmail(email); }
 
     public void deleteById(Long id) { clientRepository.deleteById(id); }

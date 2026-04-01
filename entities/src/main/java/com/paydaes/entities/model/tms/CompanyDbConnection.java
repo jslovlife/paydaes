@@ -5,10 +5,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-/**
- * Stores the company-specific database connection details.
- * Username and password are stored AES-256-GCM encrypted.
- */
 @Entity
 @Table(name = "company_db_connections")
 @Data
@@ -24,6 +20,9 @@ public class CompanyDbConnection extends BaseEntity {
     @JoinColumn(name = "company_id", nullable = false, unique = true)
     private Company company;
 
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = true;
+
     @Column(nullable = false)
     private String host;
 
@@ -38,4 +37,8 @@ public class CompanyDbConnection extends BaseEntity {
 
     @Column(nullable = false)
     private String password;
+
+    // track which key was used to encrypt, handy if need to rotate key later
+    @Column(name = "key_version", nullable = false, length = 50)
+    private String keyVersion = "v1";
 }

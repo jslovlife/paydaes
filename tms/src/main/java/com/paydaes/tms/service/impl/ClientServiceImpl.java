@@ -1,8 +1,12 @@
 package com.paydaes.tms.service.impl;
 
 import com.paydaes.entities.dao.tms.ClientDao;
+import com.paydaes.entities.dao.tms.ClientDbConnectionDao;
+import com.paydaes.entities.dao.tms.CompanyDao;
+import com.paydaes.entities.dao.tms.CompanyDbConnectionDao;
 import com.paydaes.entities.dto.tms.ClientDto;
 import com.paydaes.entities.model.tms.Client;
+import com.paydaes.entities.model.tms.Company;
 import com.paydaes.tms.exception.DuplicateResourceException;
 import com.paydaes.tms.exception.ResourceNotFoundException;
 import com.paydaes.tms.service.ClientService;
@@ -20,6 +24,9 @@ import java.util.stream.Collectors;
 public class ClientServiceImpl implements ClientService {
 
     private final ClientDao clientDao;
+    private final CompanyDao companyDao;
+    private final ClientDbConnectionDao clientDbConnectionDao;
+    private final CompanyDbConnectionDao companyDbConnectionDao;
 
     @Override
     public ClientDto createClient(ClientDto clientDto) {
@@ -69,6 +76,19 @@ public class ClientServiceImpl implements ClientService {
     public void deleteClient(Long id) {
         clientDao.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found: " + id));
+
+        // Cascade: remove each company's db connection, then the company itself
+        List<Company> companies = companyDao.findByClientId(id);
+        for (Company company : companies) {
+            companyDbConnectionDao.findByCompanyId(company.getId())
+                    .ifPresent(conn -> companyDbConnectionDao.deleteById(conn.getId()));
+            companyDao.deleteById(company.getId());
+        }
+
+        // Remove the client's commondb connection
+        clientDbConnectionDao.findByClientId(id)
+                .ifPresent(conn -> clientDbConnectionDao.deleteById(conn.getId()));
+
         clientDao.deleteById(id);
     }
 

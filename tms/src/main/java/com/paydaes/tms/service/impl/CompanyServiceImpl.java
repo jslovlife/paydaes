@@ -2,6 +2,7 @@ package com.paydaes.tms.service.impl;
 
 import com.paydaes.entities.dao.tms.ClientDao;
 import com.paydaes.entities.dao.tms.CompanyDao;
+import com.paydaes.entities.dao.tms.CompanyDbConnectionDao;
 import com.paydaes.entities.dto.tms.CompanyDto;
 import com.paydaes.entities.model.tms.Client;
 import com.paydaes.entities.model.tms.Company;
@@ -23,6 +24,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     private final CompanyDao companyDao;
     private final ClientDao clientDao;
+    private final CompanyDbConnectionDao companyDbConnectionDao;
 
     @Override
     public CompanyDto createCompany(Long clientId, CompanyDto dto) {
@@ -67,6 +69,11 @@ public class CompanyServiceImpl implements CompanyService {
     public void deleteCompany(Long id) {
         companyDao.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Company not found: " + id));
+
+        // Cascade: remove the company's db connection before deleting the company
+        companyDbConnectionDao.findByCompanyId(id)
+                .ifPresent(conn -> companyDbConnectionDao.deleteById(conn.getId()));
+
         companyDao.deleteById(id);
     }
 

@@ -22,6 +22,8 @@ public class CompanyDao {
 
     public List<Company> findByClientId(Long clientId) { return companyRepository.findByClientId(clientId); }
 
+    public boolean existsById(Long id) { return companyRepository.existsById(id); }
+
     public boolean existsByNameAndClientId(String name, Long clientId) { return companyRepository.existsByNameAndClientId(name, clientId); }
 
     public void deleteById(Long id) { companyRepository.deleteById(id); }

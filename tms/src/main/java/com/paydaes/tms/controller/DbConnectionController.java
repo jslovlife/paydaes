@@ -18,6 +18,8 @@ public class DbConnectionController {
 
     private final DbConnectionService dbConnectionService;
 
+    // --- client commondb endpoints ------
+
     @PutMapping("/client/{clientId}/commondb")
     public ResponseEntity<DbConnectionDto> saveClientDbConnection(
             @PathVariable Long clientId,
@@ -38,11 +40,18 @@ public class DbConnectionController {
         return ResponseEntity.ok(dbConnectionService.getAllClientDbConnections());
     }
 
+    @PatchMapping("/client/{clientId}/commondb/status")
+    public ResponseEntity<DbConnectionDto> toggleClientDbConnection(@PathVariable Long clientId) {
+        return ResponseEntity.ok(dbConnectionService.toggleClientDbConnection(clientId));
+    }
+
     @DeleteMapping("/client/{clientId}/commondb")
     public ResponseEntity<Void> deleteClientDbConnection(@PathVariable Long clientId) {
         dbConnectionService.deleteClientDbConnection(clientId);
         return ResponseEntity.noContent().build();
     }
+
+    // --- company db endpoints ------
 
     @PutMapping("/company/{companyId}")
     public ResponseEntity<DbConnectionDto> saveCompanyDbConnection(
@@ -63,6 +72,11 @@ public class DbConnectionController {
     public ResponseEntity<List<DbConnectionDto>> getCompanyDbConnectionsByClient(
             @PathVariable Long clientId) {
         return ResponseEntity.ok(dbConnectionService.getCompanyDbConnectionsByClientId(clientId));
+    }
+
+    @PatchMapping("/company/{companyId}/status")
+    public ResponseEntity<DbConnectionDto> toggleCompanyDbConnection(@PathVariable Long companyId) {
+        return ResponseEntity.ok(dbConnectionService.toggleCompanyDbConnection(companyId));
     }
 
     @DeleteMapping("/company/{companyId}")

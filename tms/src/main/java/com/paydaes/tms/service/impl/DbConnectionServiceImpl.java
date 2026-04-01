@@ -13,11 +13,11 @@ import com.paydaes.tms.exception.ResourceNotFoundException;
 import com.paydaes.tms.service.DbConnectionService;
 import com.paydaes.tms.util.AesEncryptionUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,21 +31,28 @@ public class DbConnectionServiceImpl implements DbConnectionService {
     private final CompanyDao companyDao;
     private final AesEncryptionUtil aesEncryptionUtil;
 
+    @Value("${tms.keystore.key-alias:v1}")
+    private String currentKeyVersion;
+
+    // -- client commondb --
+
     @Override
     public SaveResult<DbConnectionDto> saveClientDbConnection(Long clientId, DbConnectionDto dto) {
         Client client = clientDao.findById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found: " + clientId));
 
-        Optional<ClientDbConnection> existing = clientDbConnectionDao.findByClientId(clientId);
-        boolean isNew = existing.isEmpty();
+        ClientDbConnection conn = clientDbConnectionDao.findByClientId(clientId)
+                .orElse(new ClientDbConnection());
+        boolean isNew = conn.getId() == null;
 
-        ClientDbConnection conn = existing.orElse(new ClientDbConnection());
         conn.setClient(client);
+        conn.setActive(true);
         conn.setHost(dto.getHost());
         conn.setPort(dto.getPort());
         conn.setDatabaseName(dto.getDatabaseName());
         conn.setUsername(aesEncryptionUtil.encrypt(dto.getUsername()));
         conn.setPassword(aesEncryptionUtil.encrypt(dto.getPassword()));
+        conn.setKeyVersion(currentKeyVersion);
 
         return new SaveResult<>(toDto(clientDbConnectionDao.save(conn)), isNew);
     }
@@ -53,10 +60,14 @@ public class DbConnectionServiceImpl implements DbConnectionService {
     @Override
     @Transactional(readOnly = true)
     public DbConnectionDto getClientDbConnection(Long clientId) {
-        return clientDbConnectionDao.findByClientId(clientId)
-                .map(this::toDto)
+        ClientDbConnection conn = clientDbConnectionDao.findByClientId(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "No commondb connection found for client: " + clientId));
+        if (!conn.isActive()) {
+            throw new ResourceNotFoundException(
+                    "Commondb connection is disabled for client: " + clientId);
+        }
+        return toDto(conn);
     }
 
     @Override
@@ -68,6 +79,15 @@ public class DbConnectionServiceImpl implements DbConnectionService {
     }
 
     @Override
+    public DbConnectionDto toggleClientDbConnection(Long clientId) {
+        ClientDbConnection conn = clientDbConnectionDao.findByClientId(clientId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "No commondb connection found for client: " + clientId));
+        conn.setActive(!conn.isActive());
+        return toDto(clientDbConnectionDao.save(conn));
+    }
+
+    @Override
     public void deleteClientDbConnection(Long clientId) {
         ClientDbConnection conn = clientDbConnectionDao.findByClientId(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -75,21 +95,25 @@ public class DbConnectionServiceImpl implements DbConnectionService {
         clientDbConnectionDao.deleteById(conn.getId());
     }
 
+    // Company specific db
+
     @Override
     public SaveResult<DbConnectionDto> saveCompanyDbConnection(Long companyId, DbConnectionDto dto) {
         Company company = companyDao.findById(companyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Company not found: " + companyId));
 
-        Optional<CompanyDbConnection> existing = companyDbConnectionDao.findByCompanyId(companyId);
-        boolean isNew = existing.isEmpty();
+        CompanyDbConnection conn = companyDbConnectionDao.findByCompanyId(companyId)
+                .orElse(new CompanyDbConnection());
+        boolean isNew = conn.getId() == null;
 
-        CompanyDbConnection conn = existing.orElse(new CompanyDbConnection());
         conn.setCompany(company);
+        conn.setActive(true);
         conn.setHost(dto.getHost());
         conn.setPort(dto.getPort());
         conn.setDatabaseName(dto.getDatabaseName());
         conn.setUsername(aesEncryptionUtil.encrypt(dto.getUsername()));
         conn.setPassword(aesEncryptionUtil.encrypt(dto.getPassword()));
+        conn.setKeyVersion(currentKeyVersion);
 
         return new SaveResult<>(toDto(companyDbConnectionDao.save(conn)), isNew);
     }
@@ -97,21 +121,32 @@ public class DbConnectionServiceImpl implements DbConnectionService {
     @Override
     @Transactional(readOnly = true)
     public DbConnectionDto getCompanyDbConnection(Long companyId) {
-        return companyDbConnectionDao.findByCompanyId(companyId)
-                .map(this::toDto)
+        CompanyDbConnection conn = companyDbConnectionDao.findByCompanyId(companyId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "No db connection found for company: " + companyId));
+        if (!conn.isActive()) {
+            throw new ResourceNotFoundException(
+                    "Company db connection is disabled for company: " + companyId);
+        }
+        return toDto(conn);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<DbConnectionDto> getCompanyDbConnectionsByClientId(Long clientId) {
-        List<Company> companies = companyDao.findByClientId(clientId);
-        return companies.stream()
-                .map(c -> companyDbConnectionDao.findByCompanyId(c.getId()))
-                .filter(Optional::isPresent)
-                .map(opt -> toDto(opt.get()))
+        return companyDao.findByClientId(clientId).stream()
+                .flatMap(c -> companyDbConnectionDao.findByCompanyId(c.getId()).stream())
+                .map(this::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public DbConnectionDto toggleCompanyDbConnection(Long companyId) {
+        CompanyDbConnection conn = companyDbConnectionDao.findByCompanyId(companyId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "No db connection found for company: " + companyId));
+        conn.setActive(!conn.isActive());
+        return toDto(companyDbConnectionDao.save(conn));
     }
 
     @Override
@@ -122,9 +157,12 @@ public class DbConnectionServiceImpl implements DbConnectionService {
         companyDbConnectionDao.deleteById(conn.getId());
     }
 
+    // helpers - reuse for both client and company
+
     private DbConnectionDto toDto(ClientDbConnection c) {
         return new DbConnectionDto(
                 c.getId(),
+                c.isActive(),
                 c.getHost(),
                 c.getPort(),
                 c.getDatabaseName(),
@@ -138,6 +176,7 @@ public class DbConnectionServiceImpl implements DbConnectionService {
     private DbConnectionDto toDto(CompanyDbConnection c) {
         return new DbConnectionDto(
                 c.getId(),
+                c.isActive(),
                 c.getHost(),
                 c.getPort(),
                 c.getDatabaseName(),
