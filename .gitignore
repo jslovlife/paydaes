@@ -16,8 +16,6 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
 
-# Maven wrapper
-.mvn/wrapper/maven-wrapper.properties
 
 # Spring Boot devtools
 .spring-boot-devtools.properties
