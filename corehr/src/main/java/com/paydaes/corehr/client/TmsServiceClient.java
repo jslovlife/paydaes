@@ -20,32 +20,29 @@ public class TmsServiceClient {
 
     public DbConnectionDto getCompanyDbConnection(Long companyId) {
         String url = tmsClientProperties.getUrl() + "/api/tms/connections/company/{companyId}";
-        log.debug("Fetching company db connection for companyId={}", companyId);
-        return call(url, companyId, "company db for company " + companyId);
+        return call(url, companyId, "company " + companyId);
     }
 
     public DbConnectionDto getClientCommonDbConnection(Long clientId) {
         String url = tmsClientProperties.getUrl() + "/api/tms/connections/client/{clientId}/commondb";
-        log.debug("Fetching commondb connection for clientId={}", clientId);
-        return call(url, clientId, "commondb for client " + clientId);
+        return call(url, clientId, "client " + clientId);
     }
 
-    private DbConnectionDto call(String url, Long id, String context) {
+    private DbConnectionDto call(String url, Long id, String logContext) {
         try {
             DbConnectionDto dto = restTemplate.getForObject(url, DbConnectionDto.class, id);
             if (dto == null) {
-                throw new TenantResolutionException("TMS returned empty response for " + context);
+                throw new TenantResolutionException("TMS returned empty db connection response for " + logContext);
             }
             return dto;
         } catch (HttpClientErrorException.NotFound e) {
-            throw new TenantResolutionException("No database connection registered in TMS for " + context);
+            throw new TenantResolutionException("No db connection registered in TMS for " + logContext);
         } catch (ResourceAccessException e) {
-            throw new TenantResolutionException("Cannot reach TMS service at " + tmsClientProperties.getUrl()
-                    + " — ensure TMS is running");
+            throw new TenantResolutionException("Cannot reach TMS service at " + tmsClientProperties.getUrl());
         } catch (TenantResolutionException e) {
             throw e;
         } catch (Exception e) {
-            throw new TenantResolutionException("Failed to fetch connection details for " + context, e);
+            throw new TenantResolutionException("Failed to fetch connection details for " + logContext, e);
         }
     }
 }

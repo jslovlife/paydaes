@@ -1,12 +1,11 @@
 package com.paydaes.corehr.tenant;
 
-// store tenant info per thread - spring mvc is thread-per-request so this works fine
-// if move to webflux one day need to change this to reactor context, but thats future problem
+// store tenant info per thread - spring mvc is thread-per-request so this should works fine
 public final class TenantContext {
 
-    private static final ThreadLocal<Long>          CLIENT_ID  = new ThreadLocal<>();
-    private static final ThreadLocal<Long>          COMPANY_ID = new ThreadLocal<>();
-    private static final ThreadLocal<DataSourceKey> DS_KEY     = new ThreadLocal<>();
+    private static final ThreadLocal<Long> CLIENT_ID = new ThreadLocal<>();
+    private static final ThreadLocal<Long> COMPANY_ID = new ThreadLocal<>();
+    private static final ThreadLocal<DataSourceKey> DS_KEY = new ThreadLocal<>();
 
     private TenantContext() {}
 
@@ -17,11 +16,16 @@ public final class TenantContext {
         DS_KEY.set(DataSourceKey.forCompany(companyId));
     }
 
-    public static Long getCurrentClientId()              { return CLIENT_ID.get(); }
-    public static Long getCurrentCompanyId()             { return COMPANY_ID.get(); }
-    public static DataSourceKey getCurrentDataSourceKey() { return DS_KEY.get(); }
+    public static Long getCurrentClientId() { 
+        return CLIENT_ID.get(); 
+    }
+    public static Long getCurrentCompanyId() { 
+        return COMPANY_ID.get(); 
+    }
+    public static DataSourceKey getCurrentDataSourceKey() { 
+        return DS_KEY.get(); 
+    }
 
-    // switch to commondb when need to query shared client-level data
     public static void useCompanyDb() {
         Long companyId = COMPANY_ID.get();
         if (companyId != null) {
@@ -40,7 +44,7 @@ public final class TenantContext {
         return COMPANY_ID.get() != null;
     }
 
-    // MUST call this in finally block, else thread pool will carry over old tenant info
+    // need to call this in finally block, else thread pool will carry over old tenant info
     public static void clear() {
         CLIENT_ID.remove();
         COMPANY_ID.remove();

@@ -14,6 +14,7 @@ import java.util.Map;
 public class MultiTenantDataSourceConfig {
 
     // fallback when no tenant (By right, should not hit this)
+    @Bean
     public DataSource noTenantDataSource() {
         return new NoTenantDataSource();
     }

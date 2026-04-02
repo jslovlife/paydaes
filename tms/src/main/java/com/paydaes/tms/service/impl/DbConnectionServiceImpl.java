@@ -34,7 +34,7 @@ public class DbConnectionServiceImpl implements DbConnectionService {
     @Value("${tms.keystore.key-alias:v1}")
     private String currentKeyVersion;
 
-    // -- client commondb --
+    // Client commondb
 
     @Override
     public SaveResult<DbConnectionDto> saveClientDbConnection(Long clientId, DbConnectionDto dto) {
@@ -156,8 +156,6 @@ public class DbConnectionServiceImpl implements DbConnectionService {
                         "No db connection found for company: " + companyId));
         companyDbConnectionDao.deleteById(conn.getId());
     }
-
-    // helpers - reuse for both client and company
 
     private DbConnectionDto toDto(ClientDbConnection c) {
         return new DbConnectionDto(

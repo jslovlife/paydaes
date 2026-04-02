@@ -17,7 +17,7 @@ public class TenantPoolProperties {
 
     private long connectionTimeoutMs = 30_000;
 
-    // close idle connection after 10min, must be less than mysql wait_timeout (default 8h)
+    // close idle connection after 10min, must be less than mysql wait timeout (default 8h)
     private long idleTimeoutMs = 600_000;
 
     // ping idle connection every 2min so it doesnt go stale after db restart
