@@ -155,6 +155,60 @@ poc/
 
 ## Deployment Instructions
 
+### Prerequisites
+
+#### 1. Start MySQL databases
+```bash
+docker compose up -d
+```
+This starts two MySQL 8.0 containers:
+- `paydaes-mysql-tms` on port **3306** → `tmsdb`
+- `paydaes-mysql-corehr` on port **3307** → `companydb`
+
+---
+
+#### 2. Generate the AES-256 encryption key in a JCEKS Keystore
+
+TMS encrypts all database credentials using AES-256-GCM. The secret key is stored securely in a Java JCEKS keystore.
+
+```bash
+# Generate a 256-bit AES secret key in a JCEKS keystore
+keytool -genseckey \
+  -alias tms.aes.key \
+  -keyalg AES \
+  -keysize 256 \
+  -storetype JCEKS \
+  -keystore keystore.jceks \
+  -storepass P@ssword \
+  -keypass P@ssword
+```
+
+```bash
+# Verify the key entry was created successfully
+keytool -list \
+  -storetype JCEKS \
+  -keystore keystore.jceks \
+  -storepass P@ssword
+```
+
+Expected output:
+```
+Keystore type: JCEKS
+Keystore provider: SunJCE
+Your keystore contains 1 entry
+tms.aes.key, <date>, SecretKeyEntry,
+```
+
+```bash
+# Place the keystore in the TMS resources directory
+cp keystore.jceks tms/src/main/resources/keystore.jceks
+```
+
+> **Security note:** `keystore.jceks` is listed in `.gitignore` and must never be committed.
+> In prod, store it outside the application directory and set `tms.keystore.path` to the absolute file path (etc: `file:/etc/paydaes/keystore.jceks`).
+
+---
+
 ### Building the Project
 ```bash
 # Build all modules
@@ -169,22 +223,51 @@ poc/
 ### Running the Services
 ```bash
 # Run TMS service
-cd tms
 ./mvnw -pl tms spring-boot:run
 # Access at: http://localhost:8081
 
 # Run CoreHR service
-cd corehr
 ./mvnw -pl corehr spring-boot:run
 # Access at: http://localhost:8082
 ```
 
 ### Database Access
-- TMS H2 Console: http://localhost:8081/h2-console
-- CoreHR H2 Console: http://localhost:8082/h2-console
-- JDBC URL: jdbc:h2:mem:tmsdb (for TMS) or jdbc:h2:mem:companydb (for CoreHR)
-- Username: sa
-- Password: password
+
+| Service | Host | Port | Database | Username | Password |
+|---------|------|------|----------|----------|----------|
+| TMS     | localhost | 3306 | tmsdb    | paydaes  | paydaes123 |
+| CoreHR  | localhost | 3307 | companydb | paydaes | paydaes123 |
+
+Connect with any MySQL client (e.g. DBeaver, TablePlus, MySQL Workbench) using the credentials above.
+
+---
+
+### Resetting the Database
+
+> **Warning:** This permanently deletes all data and volumes. Use only in development.
+
+```bash
+# Stop containers and remove all data volumes
+docker compose down -v
+
+# Restart fresh — databases are recreated automatically
+docker compose up -d
+```
+
+To reset a single service only:
+```bash
+# Reset TMS database only
+docker compose stop mysql-tms
+docker compose rm -f mysql-tms
+docker volume rm paydaespoc_mysql_tms_data
+docker compose up -d mysql-tms
+
+# Reset CoreHR database only
+docker compose stop mysql-corehr
+docker compose rm -f mysql-corehr
+docker volume rm paydaespoc_mysql_corehr_data
+docker compose up -d mysql-corehr
+```
 
 ## Development Guidelines
 

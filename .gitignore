@@ -16,8 +16,6 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
 
-# Maven wrapper
-.mvn/wrapper/maven-wrapper.properties
 
 # Spring Boot devtools
 .spring-boot-devtools.properties
@@ -48,6 +46,12 @@ bin/
 *.env
 application-local.properties
 application-secret.properties
+
+# Keystore files — never commit secret keys
+*.jceks
+*.jks
+*.p12
+*.pfx
 
 # H2 database files
 *.db

@@ -1,0 +1,40 @@
+services:
+  mysql-tms:
+    image: mysql:8.0
+    container_name: paydaes-mysql-tms
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_USER: paydaes
+      MYSQL_PASSWORD: paydaes123
+      MYSQL_DATABASE: tmsdb
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_tms_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql-corehr:
+    image: mysql:8.0
+    container_name: paydaes-mysql-corehr
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_USER: paydaes
+      MYSQL_PASSWORD: paydaes123
+      MYSQL_DATABASE: companydb
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_corehr_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mysql_tms_data:
+  mysql_corehr_data:
