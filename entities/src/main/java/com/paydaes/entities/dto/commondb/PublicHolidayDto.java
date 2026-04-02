@@ -14,8 +14,8 @@ public class PublicHolidayDto {
     private Long id;
     private LocalDate holidayDate;
     private String name;
-    private int year;
-    private boolean isActive;
+    private Integer year;
+    private Boolean isActive;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

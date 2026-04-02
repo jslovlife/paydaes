@@ -15,9 +15,9 @@ public class LeaveTypeDto {
     private String code;
     private String name;
     private BigDecimal maxDaysPerYear;
-    private boolean isPaid;
-    private int carryForwardDays;
-    private boolean isActive;
+    private Boolean isPaid;
+    private Integer carryForwardDays;
+    private Boolean isActive;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
